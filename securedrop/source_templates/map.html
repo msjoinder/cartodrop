@@ -1,0 +1,11 @@
+{% if outimg %}
+  <img src="{{outimg}}"/>
+  <br/>
+  <ul>
+    {% for label in outlabels %}
+      <li>{{ label[0] }} - {{ label[1] }}
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>A preview of the map will appear here.</p>
+{% endif %}

@@ -1,40 +1,49 @@
 {% extends "base.html" %}
 {% block body %}
 <div id="content" class="journalist-view-single">
-<h2><span class="headline">Read documents</span></h2>
+<h2><span class="headline">View Map</span></h2>
 <p><a href="/">Back to latest submissions...</a></p>
-<h3>Collection from: <span class="code-name">{{ codename }}</span></h3>
-<form action='/regenerate-code' method='post'>
-  <input name="csrf_token" type="hidden" value="{{ csrf_token() }}"/>
-  <input type='hidden' name='sid' value='{{ sid }}'>
-  <input type='submit' value='Generate a new codename for this source'>
-</form>
 
-{% if docs %}
-<p><br />Here are the documents available. The documents are stored encrypted for security. To read them, you will need to decrypt them using PGP.</p>
-<form action="/bulk" method="post">
-<ul id="submissions" class="plain">
-{% for doc in docs %}
-<li>
-  <input type="checkbox" name="doc_names_selected" value="{{ doc.name }}" />
-  {% if doc.name.startswith('reply-') %}
-  <i>{{ doc.name }}</i> ({{ doc.size }} bytes sent {{ doc.date }})
+<div class="left-col">
+  <h3>Collection from: <span class="code-name">{{ codename }}</span></h3>
+  <form action='/regenerate-code' method='post'>
+    <input name="csrf_token" type="hidden" value="{{ csrf_token() }}"/>
+    <input type='hidden' name='sid' value='{{ sid }}'>
+    <input type='submit' value='Generate a new codename for this source'>
+  </form>
+
+  {% if docs %}
+  <p><br />Here are the documents available. The documents are stored encrypted for security. To read them, you will need to decrypt them using PGP.</p>
+  <form action="/bulk" method="post">
+  <ul id="submissions" class="plain">
+  {% for doc in docs %}
+  <li>
+    <input type="checkbox" name="doc_names_selected" value="{{ doc.name }}" />
+    {% if doc.name.startswith('reply-') %}
+    <i>{{ doc.name }}</i> ({{ doc.size }} bytes sent {{ doc.date }})
+    {% else %}
+    <a href="/col/{{ sid }}/{{ doc.name }}">{{ doc.name }}</a> ({{ doc.size }} bytes uploaded {{ doc.date }})
+    {% endif %}
+  </li>
+  {% endfor %}
+  <input name="csrf_token" type="hidden" value="{{ csrf_token() }}"/>
+  <input type="hidden" name="sid" value="{{ sid }}" autocomplete="off"/>
+  <p>
+    <button type="submit" name="action" value="download">Download selected</button>
+    <button type="submit" name="action" value="delete">Delete selected</button>
+    (<span id="select_all">select all</span>, <span id="select_none">select none</span>)</p>
+  </ul>
+  </form>
   {% else %}
-  <a href="/col/{{ sid }}/{{ doc.name }}">{{ doc.name }}</a> ({{ doc.size }} bytes uploaded {{ doc.date }})
+  <p><br />No documents to display.</p>
   {% endif %}
-</li>
-{% endfor %}
-<input name="csrf_token" type="hidden" value="{{ csrf_token() }}"/>
-<input type="hidden" name="sid" value="{{ sid }}" autocomplete="off"/>
-<p>
-  <button type="submit" name="action" value="download">Download selected</button>
-  <button type="submit" name="action" value="delete">Delete selected</button>
-  (<span id="select_all">select all</span>, <span id="select_none">select none</span>)</p>
-</ul>
-</form>
-{% else %}
-<p><br />No documents to display.</p>
-{% endif %}
+</div>
+<div class="right-col">
+  {% include 'map.html' %}
+</div>
+
+<div class="clearfix">
+</div>
 
 {% if haskey %}
 <p>You can write a secure reply to the person who submitted these documents:</p>

@@ -25,18 +25,30 @@
 </div>
 {% endif %}
 
-<form id="upload" method="post" action="/submit" enctype="multipart/form-data" autocomplete="off">
-  <input name="csrf_token" type="hidden" value="{{ csrf_token() }}"/>
-  <p style="padding-bottom: 0"><b>Upload a file:</b></p>
-  <div id="browse-select">
-    <input type="file" name="fh" autocomplete="off"/>
-  </div>
+<div class="left-col">
+  <form id="upload" method="post" action="/submit" enctype="multipart/form-data" autocomplete="off">
+    <input name="csrf_token" type="hidden" value="{{ csrf_token() }}"/>
+    <p style="padding-bottom: 0"><b>Upload a GeoJSON file:</b></p>
+    <div id="browse-select">
+      <input type="file" name="fh" autocomplete="off"/>
+    </div>
 
-  <p><b>Or just enter a message:</b></p>
+    <p><b>Or just enter coordinates:</b></p>
+    Latitude&nbsp;&nbsp;&nbsp;
+    <input type="text" name="lat"/>,<br>
+    Longitude
+    <input type="text" name="lng"/>
+    <br><br>
 
-  <textarea name="msg" cols="72" rows="10"></textarea><br />
-  <button  class="button-custom" type="submit">Submit</button>
-</form>
+    <textarea name="msg" cols="72" rows="10"></textarea><br />
+    <button  class="button-custom" type="submit">Submit</button>
+  </form>
+</div>
+<div class="right-col">
+  {% include 'map.html' %}
+</div>
+<div class="clearfix">
+</div>
 
 <p><br><a href="/journalist-key">Download journalist's public key</a> (<em><a href="/why-journalist-key">why?</a></em>)</p>
 

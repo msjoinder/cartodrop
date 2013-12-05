@@ -3,7 +3,7 @@
   <head>
     <link rel="stylesheet" href="/static/css/securedrop.css" type="text/css" media="all" />
     <link rel="icon" type="image/png" href="/static/i/favicon.png">
-    <title>SecureDrop</title>
+    <title>CartoDrop</title>
     {% block extrahead %}{% endblock %}
   </head>
   <body>
@@ -16,7 +16,7 @@
     <div id="wrapper">
       {% block header %}
       <div id="header">
-        <a href="/"><img src="/static/i/{{ header_image }}" alt="SecureDrop"></a>
+        <a href="/"><img src="/static/i/{{ header_image }}" alt="CartoDrop"></a>
         {% if use_custom_header_image %}
         <div class="powered">Powered by <img src="/static/i/securedrop_small.png" alt="SecureDrop"></div>
         {% endif %}
@@ -27,7 +27,7 @@
 
       {% block footer %}
       <div id="footer">
-        Like all software, SecureDrop may contain security bugs. Use at your own risk.<br/>
+        Like all software, CartoDrop may contain security bugs. Use at your own risk.<br/>
         Powered by <em>SecureDrop {{ version }}</em>.
       </div>
       {% endblock %}

@@ -337,3 +337,17 @@ p.header-warning {
 .powered img {
   vertical-align: middle;
 }
+
+.left-col {
+  float: left;
+  width: 45%;
+  word-wrap: break-word;
+}
+.right-col {
+  float: left;
+  width: 40%;
+  padding: 30px;
+}
+.clearfix {
+  clear: both;
+}

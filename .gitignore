@@ -43,3 +43,9 @@ nosetests.xml
 
 # Vim temp files
 *~
+
+*.DS_Store
+*.geojson
+50m_cultural
+world.png
+.gnupg

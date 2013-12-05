@@ -15,6 +15,7 @@ import store
 import background
 import zipfile
 from cStringIO import StringIO
+import mapper, json
 
 app = Flask(__name__, template_folder=config.SOURCE_TEMPLATES_DIR)
 app.config.from_object(config.FlaskConfig)
@@ -153,31 +154,86 @@ def lookup():
     if not crypto_util.getkey(g.sid) and flagged:
         async_genkey(g.sid, g.codename)
 
+    outimg = None
+    outlabels = []
+    if os.path.exists(g.sid + '.geojson'):
+        map_gj = mapper.get_my_geojson(g.sid)
+        outimg = map_gj["img"]
+        outlabels = map_gj["labels"]
+
     return render_template(
         'lookup.html', codename=g.codename, msgs=msgs, flagged=flagged,
-        haskey=crypto_util.getkey(g.sid))
+        haskey=crypto_util.getkey(g.sid), outimg=outimg, outlabels=outlabels)
 
 
 @app.route('/submit', methods=('POST',))
 @login_required
 def submit():
     msg = request.form['msg']
+    lat = request.form['lat']
+    lng = request.form['lng']
     fh = request.files['fh']
 
     if msg:
         msg_loc = store.path(g.sid, '%s_msg.gpg' % uuid.uuid4())
         crypto_util.encrypt(config.JOURNALIST_KEY, msg, msg_loc)
         flash("Thanks! We received your message.", "notification")
+    if lat and lng:
+        # generate GeoJSON
+        geojson = None
+        uploadFeature = {
+            "type": "Feature",
+            "properties": {
+                "msg": msg
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [ float(lng), float(lat) ]
+            }
+        }
+        if os.path.exists(g.sid + '.geojson'):
+            currentfile = open(g.sid + '.geojson', 'r')
+            geojson = json.load(currentfile)
+            currentfile.close()
+            uploadFeature["properties"]["sort_id"] = len(geojson["features"]) + 1
+            geojson["features"].append(uploadFeature)
+        else:
+            uploadFeature["properties"]["sort_id"] = 1
+            geojson = {
+                "type": "FeatureCollection",
+                "features": [uploadFeature]
+            }
+        gjfile = open(g.sid + '.geojson', 'w')
+        gjfile.write( json.dumps( geojson ) )
+        gjfile.close()
+
     if fh:
-        file_loc = store.path(g.sid, "%s_doc.zip.gpg" % uuid.uuid4())
+        features = [ ]
+        if os.path.exists(g.sid + '.geojson'):
+          currentfile = open(g.sid + '.geojson', 'r')
+          existing = json.load(currentfile)
+          currentfile.close()
+          features = existing["features"]
 
-        s = StringIO()
-        zip_file = zipfile.ZipFile(s, 'w')
-        zip_file.writestr(fh.filename, fh.read())
-        zip_file.close()
-        s.reset()
+        geojson_data = fh.file.read()
+        geojson = json.loads( geojson_data )
+        sort_id = len(features) + 1
+        for feature in geojson["features"]:
+            feature["properties"]["sort_id"] = sort_id
+            sort_id = sort_id + 1
 
-        crypto_util.encrypt(config.JOURNALIST_KEY, s, file_loc)
+        geojson["features"] = geojson["features"] + features
+
+        # sanitize upload
+        keys = geojson.keys()
+        for key in keys:
+            if key not in ["type", "features"]:
+                del geojson[key]
+
+        gjfile = open(g.sid + '.geojson', 'w')
+        gjfile.write( json.dumps( geojson ) )
+        gjfile.close()
+        
         flash("Thanks! We received your document '%s'."
               % fh.filename or '[unnamed]', "notification")
 

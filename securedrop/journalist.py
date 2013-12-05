@@ -12,6 +12,7 @@ import crypto_util
 import store
 import background
 import db
+import mapper
 
 app = Flask(__name__, template_folder=config.JOURNALIST_TEMPLATES_DIR)
 app.config.from_object(config.FlaskConfig)
@@ -81,9 +82,15 @@ def index():
 def col(sid):
     docs, flagged = get_docs(sid)
     haskey = crypto_util.getkey(sid)
+    outimg = None
+    outlabels = []
+    if os.path.exists(sid + '.geojson'):
+        map_gj = mapper.get_my_geojson(sid)
+        outimg = map_gj["img"]
+        outlabels = map_gj["labels"]
     return render_template("col.html", sid=sid,
                            codename=db.display_id(sid, db.sqlalchemy_handle()), docs=docs,
-                           haskey=haskey, flagged=flagged)
+                           haskey=haskey, flagged=flagged, outimg=outimg, outlabels=outlabels)
 
 
 @app.route('/col/<sid>/<fn>')
