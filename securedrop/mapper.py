@@ -1,4 +1,5 @@
-import mapnik, json, base64
+import mapnik, json
+from base64 import b64encode
 
 def prep_map(m):
   m.background = mapnik.Color('steelblue')
@@ -101,8 +102,8 @@ def get_my_geojson(sid):
   m.zoom_to_box(extent)
   #m.zoom_all()
 
-  mapnik.render_to_file(m, 'world.png', 'png')
-  worldimg = open('world.png', 'r')
-  outimg = "data:image/png;base64," + base64.b64encode(worldimg.read())
-  worldimg.close()
+  worldimg = mapnik.Image(m.width, m.height)
+  mapnik.render(m, worldimg)
+  worlddata = worldimg.tostring("png")
+  outimg = "data:image/png;base64," + b64encode(worlddata)
   return { "img": outimg, "labels": items }
