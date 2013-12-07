@@ -8,7 +8,7 @@ import uuid
 import tempfile
 
 VALIDATE_FILENAME = re.compile(
-    "^(reply-)?[a-f0-9-]+(_msg|_doc\.zip|)\.gpg$").match
+    "^(reply-)?[a-f0-9-]+(_msg|_ll|_geojson|_doc\.zip|)\.gpg$").match
 
 
 class PathException(Exception):

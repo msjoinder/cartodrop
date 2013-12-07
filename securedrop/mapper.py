@@ -19,7 +19,7 @@ def prep_map(m):
   m.layers.append(layer)
   return m
 
-def get_coord_bounds(coord, bounds=[180, 90, -180, -90]):
+def get_coord_bounds(coord, bounds):
   if(type( coord[0] ) == type( 10.0 ) or type( coord[0] ) == type( 10 )):
     # coord level
     bounds[0] = min(bounds[0], coord[0])
@@ -41,8 +41,9 @@ def get_my_geojson(sid):
   currentfile = open(sid + '.geojson', 'r')
   geojson = json.load(currentfile)
   currentfile.close()
+  bounds = [180, 90, -180, -90]
   for existing in geojson["features"]:
-    bounds = get_coord_bounds(existing["geometry"]["coordinates"])
+    bounds = get_coord_bounds(existing["geometry"]["coordinates"],bounds)
     minlng = bounds[0]
     minlat = bounds[1]
     maxlng = bounds[2]
