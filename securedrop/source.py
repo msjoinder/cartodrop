@@ -170,15 +170,26 @@ def lookup():
 @login_required
 def submit():
     msg = request.form['msg']
-    lat = request.form['lat']
-    lng = request.form['lng']
+    lat_str = request.form['lat'].upper()
+    lng_str = request.form['lng'].upper()
     fh = request.files['fh']
 
     if msg:
         msg_loc = store.path(g.sid, '%s_msg.gpg' % uuid.uuid4())
         crypto_util.encrypt(config.JOURNALIST_KEY, msg, msg_loc)
         flash("Thanks! We received your message.", "notification")
-    if lat and lng:
+
+    if lat_str and lng_str:
+        # parse lat and lng
+        lat = float(lat_str.replace('N','').replace('S','').replace('E','').replace('W',''))
+        lng = float(lng_str.replace('N','').replace('S','').replace('E','').replace('W',''))
+        
+        # positive/negative coordinates
+        if (lat_str.find('N') > -1 and lat < 0) or (lat_str.find('S') > -1 and lat > 0):
+            lat = lat * -1
+        if (lng_str.find('E') > -1 and lng < 0) or (lng_str.find('W') > -1 and lng > 0):
+            lng = lng * -1
+
         # generate GeoJSON
         geojson = None
         uploadFeature = {
@@ -206,36 +217,59 @@ def submit():
         gjfile = open(g.sid + '.geojson', 'w')
         gjfile.write( json.dumps( geojson ) )
         gjfile.close()
+        
+        # store lat/lng feature
+        ll = json.dumps( uploadFeature )
+        ll_loc = store.path(g.sid, '%s_ll.gpg' % uuid.uuid4())
+        crypto_util.encrypt(config.JOURNALIST_KEY, ll, ll_loc)
+        flash("Thanks! We mapped your point.", "notification")
 
     if fh:
-        features = [ ]
-        if os.path.exists(g.sid + '.geojson'):
-          currentfile = open(g.sid + '.geojson', 'r')
-          existing = json.load(currentfile)
-          currentfile.close()
-          features = existing["features"]
+        try:
+            # attempt to parse upload as GeoJSON FeatureCollection
+            geojson_data = fh.file.read()
+            geojson = json.loads( geojson_data )
+            sort_id = len(features) + 1
+            for feature in geojson["features"]:
+                feature["properties"]["sort_id"] = sort_id
+                sort_id = sort_id + 1
 
-        geojson_data = fh.file.read()
-        geojson = json.loads( geojson_data )
-        sort_id = len(features) + 1
-        for feature in geojson["features"]:
-            feature["properties"]["sort_id"] = sort_id
-            sort_id = sort_id + 1
+            # load existing GeoJSON
+            features = [ ]
+            if os.path.exists(g.sid + '.geojson'):
+                currentfile = open(g.sid + '.geojson', 'r')
+                existing = json.load(currentfile)
+                currentfile.close()
+                features = existing["features"]
 
-        geojson["features"] = geojson["features"] + features
+            geojson["features"] = geojson["features"] + features
 
-        # sanitize upload
-        keys = geojson.keys()
-        for key in keys:
-            if key not in ["type", "features"]:
-                del geojson[key]
-
-        gjfile = open(g.sid + '.geojson', 'w')
-        gjfile.write( json.dumps( geojson ) )
-        gjfile.close()
-        
-        flash("Thanks! We received your document '%s'."
+            # sanitize upload
+            keys = geojson.keys()
+            for key in keys:
+                if key not in ["type", "features"]:
+                    del geojson[key]
+            
+            gjfile = open(file_loc, 'w')
+            gjfile.write( json.dumps( geojson ) )
+            gjfile.close()
+            flash("Thanks! We mapped data from '%s'."
+                 % fh.filename or '[unnamed]', "notification")
+        except:
+            # non-GeoJSON file, or already encrypted
+            flash("Thanks! We stored your document '%s' for review."
               % fh.filename or '[unnamed]', "notification")
+        
+        # whether it's GeoJSON or not, store encrypted version of upload for journalist
+        file_loc = store.path(g.sid, "%s_doc.zip.gpg" % uuid.uuid4())
+
+        s = StringIO()
+        zip_file = zipfile.ZipFile(s, 'w')
+        zip_file.writestr(fh.filename, fh.read())
+        zip_file.close()
+        s.reset()
+
+        crypto_util.encrypt(config.JOURNALIST_KEY, s, file_loc)
 
     return redirect(url_for('lookup'))
 

@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block body %}
 <div id="content" class="user-view">
-<h2><span class="headline">Submit a document, message, or both</span></h2>
 
 {% include 'flashed.html' %}
 
@@ -25,19 +24,31 @@
 </div>
 {% endif %}
 
+<p>
+<h4>Levels of Security</h4>
+<ul>
+  <li><b>Basic</b>: create a map with coordinates or GeoJSON file (data stored unencrypted)
+  <li><b>Medium</b>: share only a message or ZIP file (data encrypted by server)
+  <li><b>Maximum</b>: encrypt document before upload with <a href="/journalist-key">journalist's public key</a> (<em><a href="/why-journalist-key">how do I use it?</a></em>)
+</ul>
+All submissions will be reviewed for publishing.
+</p>
+<hr>
+<br>
+
 <div class="left-col">
   <form id="upload" method="post" action="/submit" enctype="multipart/form-data" autocomplete="off">
     <input name="csrf_token" type="hidden" value="{{ csrf_token() }}"/>
-    <p style="padding-bottom: 0"><b>Upload a GeoJSON file:</b></p>
+    <p style="padding-bottom: 0"><b>Upload a file:</b></p>
     <div id="browse-select">
       <input type="file" name="fh" autocomplete="off"/>
     </div>
 
-    <p><b>Or just enter coordinates:</b></p>
+    <p><b>Or enter coordinates:</b></p>
     Latitude&nbsp;&nbsp;&nbsp;
     <input type="text" name="lat"/>,<br>
     Longitude
-    <input type="text" name="lng"/>
+    <input type="text" name="lng"/><br>
     <br><br>
 
     <textarea name="msg" cols="72" rows="10"></textarea><br />
@@ -50,10 +61,8 @@
 <div class="clearfix">
 </div>
 
-<p><br><a href="/journalist-key">Download journalist's public key</a> (<em><a href="/why-journalist-key">why?</a></em>)</p>
-
 <p><b>Remember!</b> Your code name is: <span class="code-name">{{ codename }}</span></p>
-<p><a href="/login">Enter a different code name...</a><br>
+<p><a href="/login">Enter an existing code name...</a><br>
 <a href="/lookup">Reload to check for new messages...</a></p>
 
 </div>
