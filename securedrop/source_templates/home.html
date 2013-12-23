@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+<script type="text/javascript" src="/static/js/libs/jquery-2.0.3.min.js"></script>
+<script type="text/javascript" src="/static/libs/gritter/js/jquery.gritter.min.js"></script>
+<link rel="stylesheet" href="/static/libs/gritter/css/jquery.gritter.css" type="text/css" media="all" />
+<script type="text/javascript" src="/static/js/warn.js"></script>
+{% endblock %}
+
+{% block body %}
+<div id="content" class="submit-1">
+  <div id="source-left">
+    <h2><a href="post">Submit documents</a></h2>
+    <p>Use the Tor browser to anonymously submit maps and other documents.</p>
+    <p>After your map is reviewed, it may be posted as a story.</p>
+  </div>
+  <div id="source-right">
+    <h2>Stories</h2>
+    {% for story in stories %}
+      <div class="story">
+        <h3 class="story-banner"><a href="story/{{ story.sid }}">{{ story.sid }}</a></h3>
+        <p class="story-desc">Description for stuff</p>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="clear"></div>
+</div>
+{% endblock %}

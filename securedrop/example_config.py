@@ -45,6 +45,7 @@ else:
 
 # data directories - should be on secure media
 STORE_DIR=os.path.join(SECUREDROP_ROOT, 'store')
+STORY_STORE_DIR=os.path.join(SECUREDROP_ROOT, 'stories')
 GPG_KEY_DIR=os.path.join(SECUREDROP_ROOT, 'keys')
 
 # create the data directories

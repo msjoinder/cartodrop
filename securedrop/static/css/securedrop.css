@@ -197,12 +197,14 @@ div.regenerate-warning{
 }
 
 #source-left {
+  vertical-align: top;
   width: 290px;
   float: left;
   padding: 0 10px 0 0;
 }
 
 #source-right {
+  vertical-align: top;
   width: 290px;
   float: left;
   padding: 0 0 0 10px;
@@ -350,4 +352,23 @@ p.header-warning {
 }
 .clearfix {
   clear: both;
+}
+
+.story {
+  background-color: #eee;
+  border: 1px solid #223;
+  margin-bottom: 5px;
+}
+
+.story p{
+  padding: 4px;
+}
+
+.story-banner {
+  background-color: darkblue;
+  padding: 8px;
+}
+
+.story-banner a {
+  color: #fff;
 }

@@ -15,7 +15,7 @@ import store
 import background
 import zipfile
 from cStringIO import StringIO
-import mapper, json
+import mapper, json, db
 
 app = Flask(__name__, template_folder=config.SOURCE_TEMPLATES_DIR)
 app.config.from_object(config.FlaskConfig)
@@ -93,8 +93,26 @@ def no_cache(response):
         response.headers.add(header, header_value)
     return response
 
-
 @app.route('/')
+def home():
+    stories = []
+
+    dirs = os.listdir(config.STORY_STORE_DIR)
+    db_session = db.sqlalchemy_handle()
+    for d in dirs:
+        display_id = db.display_id(d, db_session)
+        stories.append(dict(
+            name=d,
+            sid=display_id,
+            date=str(datetime.fromtimestamp(os.stat(store.path(d)).st_mtime)
+                     ).split('.')[0]
+        ))
+    db_session.close()
+
+    stories.sort(key=lambda x: x['date'], reverse=True)
+    return render_template('home.html', stories=stories)
+
+@app.route('/post')
 def index():
     return render_template('index.html')
 
