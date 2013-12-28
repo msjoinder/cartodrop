@@ -11,6 +11,12 @@
     <input type='hidden' name='sid' value='{{ sid }}'>
     <input type='submit' value='Generate a new codename for this source'>
   </form>
+  <br/>
+  <form action='/move-to-stories' method='post'>
+    <input name="csrf_token" type="hidden" value="{{ csrf_token() }}"/>
+    <input type='hidden' name='sid' value='{{ sid }}'>
+    <input type='submit' value='Publish Map'>
+  </form>
 
   {% if docs %}
   <p><br />Here are the documents available. The documents are stored encrypted for security. To read them, you will need to decrypt them using PGP.</p>

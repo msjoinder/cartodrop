@@ -13,6 +13,7 @@ import store
 import background
 import db
 import mapper
+import shutil
 
 app = Flask(__name__, template_folder=config.JOURNALIST_TEMPLATES_DIR)
 app.config.from_object(config.FlaskConfig)
@@ -107,6 +108,14 @@ def reply():
                         store.path(sid, 'reply-%s.gpg' % uuid.uuid4()))
     return render_template('reply.html', sid=sid, codename=db.display_id(sid, db.sqlalchemy_handle()))
 
+
+@app.route('/move-to-stories', methods=('POST',))
+def move_to_stories():
+    sid = request.form['sid']
+    if os.path.exists( os.path.join( config.STORY_STORE_DIR, sid ) ):
+        shutil.rmtree( os.path.join( config.STORY_STORE_DIR, sid ) )
+    shutil.copytree( store.path( sid ), os.path.join( config.STORY_STORE_DIR, sid ) )
+    return redirect('/col/' + sid)
 
 @app.route('/regenerate-code', methods=('POST',))
 def generate_code():
