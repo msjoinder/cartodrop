@@ -18,8 +18,7 @@
     <h2>Stories</h2>
     {% for story in stories %}
       <div class="story">
-        <h3 class="story-banner"><a href="story/{{ story.sid }}">{{ story.sid }}</a></h3>
-        <p class="story-desc">Description for stuff</p>
+        <h3 class="story-banner"><a href="story/{{ story.name }}">{{ story.sid }}</a></h3>
       </div>
     {% endfor %}
   </div>

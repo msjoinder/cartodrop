@@ -183,6 +183,16 @@ def lookup():
         'lookup.html', codename=g.codename, msgs=msgs, flagged=flagged,
         haskey=crypto_util.getkey(g.sid), outimg=outimg, outlabels=outlabels)
 
+@app.route('/story/<sid>', methods=('GET',))
+def story(sid):
+    outimg = None
+    outlabels = []
+    if os.path.exists(sid + '.geojson'):
+        map_gj = mapper.get_my_geojson(sid)
+        outimg = map_gj["img"]
+        outlabels = map_gj["labels"]
+
+    return render_template('story.html', outimg=outimg, outlabels=outlabels)
 
 @app.route('/submit', methods=('POST',))
 @login_required

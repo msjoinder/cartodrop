@@ -372,3 +372,7 @@ p.header-warning {
 .story-banner a {
   color: #fff;
 }
+
+.story-banner a:hover {
+  text-decoration: underline;
+}
