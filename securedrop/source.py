@@ -187,8 +187,8 @@ def lookup():
 def story(sid):
     outimg = None
     outlabels = []
-    if os.path.exists(sid + '.geojson'):
-        map_gj = mapper.get_my_geojson(sid)
+    if os.path.exists( os.path.join(config.STORY_STORE_DIR, sid, sid + '.geojson') ):
+        map_gj = mapper.get_my_geojson(sid, True)
         outimg = map_gj["img"]
         outlabels = map_gj["labels"]
 

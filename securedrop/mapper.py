@@ -1,4 +1,5 @@
-import mapnik, json
+import mapnik, json, os
+import config
 from base64 import b64encode
 
 def prep_map(m):
@@ -33,7 +34,11 @@ def get_coord_bounds(coord, bounds):
       bounds = get_coord_bounds(subset, bounds)
     return bounds
 
-def get_my_geojson(sid):
+def get_my_geojson(sid, inStory=False):
+  # check for inStory
+  if(inStory == True):
+    sid = os.path.join(config.STORY_STORE_DIR, sid, sid)
+
   # prep map label list
   items = [ ]
 
@@ -52,7 +57,11 @@ def get_my_geojson(sid):
       items.append([existing["properties"]["sort_id"], existing["properties"]["msg"] ])
 
   # prep Mapnik
-  m = mapnik.Map(400, 400)
+  width = 400
+  height = 400
+  if(inStory == True):
+    width = 700
+  m = mapnik.Map(width, height)
   prep_map(m)
         
   # style GeoJSON

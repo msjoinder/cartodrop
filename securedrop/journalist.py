@@ -115,6 +115,8 @@ def move_to_stories():
     if os.path.exists( os.path.join( config.STORY_STORE_DIR, sid ) ):
         shutil.rmtree( os.path.join( config.STORY_STORE_DIR, sid ) )
     shutil.copytree( store.path( sid ), os.path.join( config.STORY_STORE_DIR, sid ) )
+    if os.path.exists( sid + ".geojson" ):
+        shutil.copyfile( sid + ".geojson", os.path.join( config.STORY_STORE_DIR, sid, sid + ".geojson" ) )
     return redirect('/col/' + sid)
 
 @app.route('/regenerate-code', methods=('POST',))
