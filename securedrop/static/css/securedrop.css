@@ -365,8 +365,15 @@ p.header-warning {
 }
 
 .story-banner {
-  background-color: darkblue;
-  padding: 8px;
+  background-color: #3498db;
+  border-color: #3498db;
+  padding: 8px 10px;
+  font-size: 15px;
+  font-weight: normal;
+  line-height: 1.43;
+  text-align: center;
+  vertical-align: middle;
+  border-radius: 4px;
 }
 
 .story-banner a {
