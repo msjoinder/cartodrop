@@ -112,11 +112,16 @@ def reply():
 @app.route('/move-to-stories', methods=('POST',))
 def move_to_stories():
     sid = request.form['sid']
-    if os.path.exists( os.path.join( config.STORY_STORE_DIR, sid ) ):
-        shutil.rmtree( os.path.join( config.STORY_STORE_DIR, sid ) )
-    shutil.copytree( store.path( sid ), os.path.join( config.STORY_STORE_DIR, sid ) )
+
+    db_session = db.sqlalchemy_handle()
+    display_id = db.display_id(sid, db_session)
+    display_id = display_id.replace(' ','').replace("'","")
+
+    if os.path.exists( os.path.join( config.STORY_STORE_DIR, display_id ) ):
+        shutil.rmtree( os.path.join( config.STORY_STORE_DIR, display_id ) )
+    shutil.copytree( store.path( sid ), os.path.join( config.STORY_STORE_DIR, display_id ) )
     if os.path.exists( sid + ".geojson" ):
-        shutil.copyfile( sid + ".geojson", os.path.join( config.STORY_STORE_DIR, sid, sid + ".geojson" ) )
+        shutil.copyfile( sid + ".geojson", os.path.join( config.STORY_STORE_DIR, display_id, display_id + ".geojson" ) )
     return redirect('/col/' + sid)
 
 @app.route('/regenerate-code', methods=('POST',))

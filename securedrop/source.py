@@ -98,16 +98,14 @@ def home():
     stories = []
 
     dirs = os.listdir(config.STORY_STORE_DIR)
-    db_session = db.sqlalchemy_handle()
     for d in dirs:
-        display_id = db.display_id(d, db_session)
+        display_id = d
         stories.append(dict(
             name=d,
             sid=display_id,
-            date=str(datetime.fromtimestamp(os.stat(store.path(d)).st_mtime)
+            date=str(datetime.fromtimestamp(os.stat(os.path.join(config.STORY_STORE_DIR, d)).st_mtime)
                      ).split('.')[0]
         ))
-    db_session.close()
 
     stories.sort(key=lambda x: x['date'], reverse=True)
     return render_template('home.html', stories=stories)
