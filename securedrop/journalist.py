@@ -115,7 +115,7 @@ def move_to_stories():
 
     db_session = db.sqlalchemy_handle()
     display_id = db.display_id(sid, db_session)
-    display_id = display_id.replace(' ','').replace("'","")
+    display_id = display_id.replace(' ','_').replace("'","_")
 
     if os.path.exists( os.path.join( config.STORY_STORE_DIR, display_id ) ):
         shutil.rmtree( os.path.join( config.STORY_STORE_DIR, display_id ) )
